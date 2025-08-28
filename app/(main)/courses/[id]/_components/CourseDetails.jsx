@@ -8,7 +8,6 @@ import CourseOverView from "./CourseOverView";
 import CourseInstructor from "./CourseInstructor";
 
 const CourseDetails = ({ course }) => {
-    console.log(course);
     const lastModifiedDate = formatMyDate(course?.modifiedOn);
     return (
         <section className="py-8 md:py-12 lg:py-24">

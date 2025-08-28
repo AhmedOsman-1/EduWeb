@@ -47,7 +47,7 @@ const HomePage = async () => {
                             Explore Now
                         </Link>
                         <Link
-                            href=""
+                            href="/register/instructor"
                             className={cn(
                                 buttonVariants({
                                     variant: "outline",

@@ -101,7 +101,6 @@ const avgRating = (totalTestimonials.reduce(function (acc, obj) {
     return acc + obj.rating;
 }, 0)) / totalTestimonials.length;
 
-    console.log("testimonials", testimonials, avgRating);
     return {
         "courses": courses.length,
         "enrollments": totalEnrollments,

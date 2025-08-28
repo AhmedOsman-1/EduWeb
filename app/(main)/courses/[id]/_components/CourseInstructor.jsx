@@ -14,7 +14,6 @@ const CourseInstructor = async ({ course }) => {
 
 
 
-    console.log(courseDetailsByInstructor);
     return (
         <div className="bg-gray-50 rounded-md p-8">
             <div className="md:flex md:gap-x-5 mb-8">
