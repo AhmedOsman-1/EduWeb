@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { User } from "./model/user-model";
+import { authConfig } from "./auth.config";
 
 import bcrypt from "bcryptjs"
 
@@ -9,11 +10,9 @@ import bcrypt from "bcryptjs"
     auth,
     signIn,
     signOut,
-} 
+}  
  = NextAuth({
-    session: {
-        strategy: "jwt"
-    },
+    ...authConfig,
     providers: [
         CredentialsProvider({
             async authorize(credentials) {

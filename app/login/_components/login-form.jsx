@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -17,27 +17,26 @@ import { credentialLogin } from "@/app/actions";
 import { useState } from "react";
 
 export function LoginForm() {
+    const [error, setError] = useState("");
+    const router = useRouter();
 
-  const [error, setError] = useState("");
-  const router = useRouter();
+    async function onSubmit(event) {
+        event.preventDefault();
 
-  async function onSubmit(event) {
-    event.preventDefault();
+        try {
+            const formData = new FormData(event.currentTarget);
+            const response = await credentialLogin(formData);
 
-    try {
-      const formData = new FormData(event.currentTarget);
-      const response = await credentialLogin(formData);
-
-      if (!!response.error) {
-        console.error(response.error);
-        setError(response.error);
-      } else {
-        router.push("/courses")
-      }
-    } catch(e) {
-      setError(e.message)
+            if (!!response.error) {
+                console.error(response.error);
+                setError(response.error);
+            } else {
+                router.push("/courses");
+            }
+        } catch (e) {
+            setError(e.message);
+        }
     }
-  }
     return (
         <Card className="mx-auto max-w-sm w-full">
             <CardHeader>
@@ -76,10 +75,9 @@ export function LoginForm() {
                     </div>
                 </form>
                 <div className="mt-4 text-center text-sm">
-                    Don&apos;t have an account?{" "}
-                    Register as {" "}
+                    Don&apos;t have an account? Register as{" "}
                     <Link href="/register/instructor" className="underline">
-                         Instructor {""}
+                        Instructor {""}
                     </Link>
                     or {""}
                     <Link href="/register/student" className="underline">

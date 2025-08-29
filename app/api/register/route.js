@@ -1,32 +1,37 @@
 import { User } from "@/model/user-model";
 import { dbConnect } from "@/service/mongo";
-import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { NextResponse } from "next/server";
 
-export const POST = async (request) =>{
-   const { firstName, lastName, email, password, userRole } = await request.json();
+export const POST = async (request) => {
+    const { firstName, lastName, email, password, userRole } = await request.json();
 
-   console.log(firstName, lastName, email, password, userRole);
+    if (![firstName, lastName, email, password, userRole].every(Boolean)) {
+        return NextResponse.json({ error: "All fields are required" }, { status: 400 });
+    }
 
-   await dbConnect();
+    try {
+        await dbConnect();
 
-   const hashedPassword = await bcrypt.hash(password, 5);
+        const userExists = await User.exists({ email });
+        if (userExists) {
+            return NextResponse.json({ error: "Email is already registered" }, { status: 409 });
+        }
 
-   const newUser = {
-    firstName,
-    lastName,
-    email,
-    password: hashedPassword,
-    role: userRole
-   }
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-   console.log(newUser)
+        const createdUser = await User.create({
+            firstName,
+            lastName,
+            email,
+            password: hashedPassword,
+            role: userRole,
+        });
 
-   try {
-        await User.create(newUser);
-        return new NextResponse("User has been created successfully", { status: 201 });
-   } catch (error) {
-        console.log(error);
-        return new NextResponse("Database Error", { status: 500 });
-   }
-}
+        return NextResponse.json({ message: "User created successfully", user: createdUser }, { status: 201 });
+
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+    }
+};
