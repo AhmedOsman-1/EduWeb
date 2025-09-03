@@ -15,15 +15,20 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button, buttonVariants } from "./ui/button";
+import { redirect } from "next/navigation";
 
 export function MobileNav({ items, children }) {
+  useLockBody();
    const {data: session} = useSession();
+   if (session?.error === 'RefreshAccessTokenError'){
+           redirect('/login');
+       }
   const [loginSession, setLoginSession] = useState(null);
 
-  useLockBody();
+
   
     useEffect(() => {
-        console.log('test');
+        
         setLoginSession(session);
     }, [session])
 

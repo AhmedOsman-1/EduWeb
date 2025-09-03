@@ -11,6 +11,7 @@ import { Menu, X } from "lucide-react";
 import { Logo } from "./logo";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button, buttonVariants } from "./ui/button";
+import { redirect } from "next/navigation";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -22,12 +23,17 @@ export function MainNav({ items, children }) {
 
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [loginSession, setLoginSession] = useState(null);
+    console.log(session)
+
+
+    if (session?.error === 'RefreshAccessTokenError'){
+        redirect('/login');
+    }
     
-    console.log(loginSession);
 
 
     useEffect(() => {
-        console.log('test');
+      
         setLoginSession(session);
     }, [session])
     return (
