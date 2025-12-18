@@ -1,3 +1,6 @@
+
+
+
 import { SignupForm } from "../_components/signup-form";
 
 const RegisterPage = ({params: {role}}) => {
@@ -10,3 +13,4 @@ const RegisterPage = ({params: {role}}) => {
   );
 };
 export default RegisterPage;
+

@@ -1,135 +1,97 @@
 import NextAuth from "next-auth";
-import { authConfig } from "./auth.config";
-import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import { User } from "./model/user-model";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { dbConnect } from "@/service/mongo";
+import { User } from "@/model/user-model";
 import bcrypt from "bcryptjs";
 
-async function refreshAccessToken(token) {
-    try {
-        const url =
-            "https://oauth2.googleapis.com/token?" +
-            new URLSearchParams({
-                client_id: process.env.GOOGLE_CLIENT_ID,
-                client_secret: process.env.GOOGLE_CLIENT_SECRET,
-                grant_type: "refresh_token",
-                refresh_token: token.refreshToken,
-            });
+export const {
+  handlers: { GET, POST },
+  auth,
+  signIn,
+  signOut,
+} = NextAuth({
+  session: {
+    strategy: "jwt",
+  },
 
-            const response = await fetch(url, {
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-              },
-              method: 'POST'
-            })
+  providers: [
+    // =======================
+    // CREDENTIALS LOGIN
+    // =======================
+    CredentialsProvider({
+      name: "Credentials",
+      async authorize(credentials) {
+        await dbConnect();
 
-            const refreshedTokens = await response.json();
+        const user = await User.findOne({ email: credentials.email });
+        if (!user || !user.password) return null;
 
-            if(!response.ok) {
-              throw refreshedTokens;
-            }
+        const isValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
 
-            return {
-              ...token,
-              accessToken: refreshedTokens?.access_token,
-              accessTokenExpires: Date.now() + refreshedTokens?.expires_in * 1000,
-              refreshToken: refreshedTokens?.refresh_token,
-            }
-    } catch (error) {
-        console.log(error);
+        if (!isValid) return null;
 
         return {
-          ...token,
-          error: "RefreshAccessTokenError"
+          id: user._id.toString(),
+          email: user.email,
+          name: `${user.firstName} ${user.lastName}`,
+          image: user.profilePicture,
+        };
+      },
+    }),
+
+    // =======================
+    // GOOGLE LOGIN
+    // =======================
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+  ],
+
+  callbacks: {
+    // 🔥 THIS FIXES GOOGLE USER ISSUE
+    async signIn({ user, account }) {
+      if (account.provider === "google") {
+        await dbConnect();
+
+        const exists = await User.findOne({ email: user.email });
+
+        if (!exists) {
+          const [firstName = "", lastName = ""] = user.name.split(" ");
+
+          await User.create({
+            firstName,
+            lastName,
+            email: user.email,
+            password: null,
+            role: "student",
+            profilePicture: user.image,
+            provider: "google",
+          });
         }
-    }
-}
+      }
+      return true;
+    },
 
-export const {
-    auth,
-    signIn,
-    signOut,
-    handlers: { GET, POST },
-} = NextAuth({
-    ...authConfig,
-    providers: [
-        CredentialsProvider({
-            async authorize(credentials) {
-                if (credentials == null) return null;
+    // 🔥 SESSION ALWAYS HAS DATA
+    async jwt({ token, user }) {
+      if (user) {
+        token.email = user.email;
+        token.name = user.name;
+        token.picture = user.image;
+      }
+      return token;
+    },
 
-                try {
-                    const user = await User.findOne({
-                        email: credentials?.email,
-                    });
-                    console.log(user);
-
-                    if (user) {
-                        const isMatch = await bcrypt.compare(
-                            credentials.password,
-                            user.password
-                        );
-
-                        if (isMatch) {
-                            return user;
-                        } else {
-                            console.error("password mismatch");
-                            throw new Error("Check your password");
-                        }
-                    } else {
-                        console.error("User not found");
-                        throw new Error("User not found");
-                    }
-                } catch (err) {
-                    console.error(err);
-                    throw new Error(err);
-                }
-            },
-        }),
-        GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            authorization: {
-                params: {
-                    prompt: "consent",
-                    access_type: "offline",
-                    response_type: "code",
-                },
-            },
-        }),
-    ],
-    /* callbacks: {
-        async jwt({ token, user, account }) {
-          console.log(`JWT token: ${JSON.stringify(token)}`);
-          console.log(`JWT Account: ${JSON.stringify(account)}`);
-
-            if (account && user) {
-                return {
-                    accessToken: account?.access_token,
-                    accessTokenExpires: Date.now() + account?.expires_in * 1000,
-                    refreshToken: account?.refresh_token,
-                    user,
-                };
-            }
-
-            console.log(`Token Will Expire at ${new Date(token.accessTokenExpires)})`);
-
-            if (Date.now() < token?.accessTokenExpires) {
-                console.log(`At ${new Date(Date.now())}, Using old access token`);
-                return token;
-            }
-
-            console.log(`Token Expired at ${new Date(Date.now())}`)
-            return refreshAccessToken(token);
-        },
-
-        async session({ session, token }) {
-
-          session.user = token?.user;
-          session.accessToken = token?.access_token;
-          session.error = token?.error
-
-          console.log(`Returning Session ${JSON.stringify(session)}`)
-          return session;
-        },
-    },*/
+    async session({ session, token }) {
+      session.user.email = token.email;
+      session.user.name = token.name;
+      session.user.image = token.picture;
+      return session;
+    },
+  },
 });

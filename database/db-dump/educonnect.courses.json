@@ -13,7 +13,7 @@
       "$oid": "663a0893bfe65e5778eedf3d"
     }
   ],
-  "price": 29.99,
+  "price": 5000.99,
   "active": true,
   "category": {
     "$oid": "664813cc6fe803e9128d7fae"
@@ -59,7 +59,7 @@
       "$oid": "663a0893bfe65e5778eedf3d"
     }
   ],
-  "price": 24.99,
+  "price": 3400.00,
   "active": true,
   "category": {
     "$oid": "664813cc6fe803e9128d7fae"

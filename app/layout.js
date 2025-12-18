@@ -1,6 +1,5 @@
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
-import { dbConnect } from "@/service/mongo";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 
@@ -12,7 +11,7 @@ const inter = Inter({
 const poppins = Poppins({
     subsets: ["latin"],
     variable: "--font-poppins",
-    weight: ["400", "500", "600", "700"], 
+    weight: ["400", "500", "600", "700"],
 });
 
 export const metadata = {
@@ -22,7 +21,6 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-
     return (
         <html lang="en">
             <body

@@ -84,10 +84,10 @@ export async function getCourseDetailsByInstructor(instructorId) {
             );
             return enrollment;
         })
-    );
+    ); 
 
-    const totalEnrollments = enrollments.reduce((sum, currentValue) => {
-        return sum + (currentValue?.length || 0);
+    const totalEnrollments = enrollments.reduce(function (acc, obj){
+        return acc + obj.length;
     }, 0);
 
     const testimonials = await Promise.all(

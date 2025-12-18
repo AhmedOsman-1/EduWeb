@@ -1,10 +1,28 @@
 import mongoose from "mongoose";
 
-export async function dbConnect(){
-    try {
-        const conn = await mongoose.connect(String(process.env.MONGODB_CONNECTION_STRING));
-        return conn;
-    } catch(err) {
-        console.error(err);
-    }
+const MONGODB_URI = process.env.MONGODB_CONNECTION_STRING;
+
+if (!MONGODB_URI) {
+  throw new Error("⚠️ Please define MONGODB_CONNECTION_STRING inside .env.local");
+}
+
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
+export async function dbConnect() {
+  if (cached.conn) return cached.conn;
+
+  if (!cached.promise) {
+    cached.promise = mongoose
+      .connect(MONGODB_URI, {
+        bufferCommands: false,
+      })
+      .then((mongoose) => mongoose);
+  }
+
+  cached.conn = await cached.promise;
+  return cached.conn;
 }

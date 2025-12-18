@@ -125,7 +125,7 @@ const CoursesPage = async () => {
             {/* <h2 className="text-xl md:text-2xl font-medium">All Courses</h2> */}
             {/* header */}
             <div className="flex items-baseline justify-between  border-gray-200 border-b pb-6 flex-col gap-4 lg:flex-row">
-                <SearchCourse /> n
+                <SearchCourse /> 
                 <div className="flex items-center justify-end gap-2 max-lg:w-full">
                     <SortCourse />
 
