@@ -20,7 +20,7 @@ async function Profile() {
                 <div className="grid lg:grid-cols-2 grid-cols-1 gap-5">
                     <ContactInfo />
                     {/*end col*/}
-					<ChangePassword />
+					<ChangePassword email={loggedInUser?.email}/>
                     {/*end col*/}
                 </div>
                 {/*end row*/}

@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { updateUserInfo } from "@/app/actions/account";
+
+import { toast } from "sonner";
 
 import { useState } from "react";
 
@@ -14,12 +17,12 @@ const PersonalDetails = ({userInfo}) => {
         "firstName": userInfo?.firstName || "",
         "lastName": userInfo?.lastName || "",
         "email": userInfo?.email || "",
-        "designation": userInfo?.occupation || "",
+        "designation": userInfo?.designation || "",
         "bio": userInfo?.bio || "",
         "phone": userInfo?.phone || "",    
     });
 
-    const handleChange = (e) => {
+    const handleChange = (event) => {
         const field = event.target.name;
         const value = event.target.value;
         setInfoState({
@@ -30,7 +33,13 @@ const PersonalDetails = ({userInfo}) => {
 
     const handleUpdate = async (e) => {
         e.preventDefault();
-        console.log(infoState);
+        try {
+            await updateUserInfo(userInfo?.email, infoState);
+            toast.success("User information updated successfully!");
+        } catch (error) {
+            console.error("Error updating user info:", error);
+            toast.error("Failed to update user information.");
+        }
     }
     return (
         <div className="p-6 rounded-md shadow dark:shadow-gray-800 bg-white dark:bg-slate-900">
@@ -81,7 +90,7 @@ const PersonalDetails = ({userInfo}) => {
                         <Label className="mb-2 block">Occupation :</Label>
                         <Input
                             name="designation"
-                            id="occupation"
+                            id="designation"
                             type="text"
                             value={infoState.designation}
                             placeholder="Occupation :"
@@ -103,7 +112,7 @@ const PersonalDetails = ({userInfo}) => {
                     </div>
                 </div>
                 {/*end row*/}
-                <Button className="mt-5" asChild>
+                <Button className="mt-5 cursor-pointer" asChild>
                     <input type="submit" name="send" value="Save Changes" />
                 </Button>
             </form>
