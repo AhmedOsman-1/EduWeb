@@ -8,9 +8,10 @@ const userSchema = new Schema({
     phone: { required: false, type: String },
     role: { required: true, type: String },
     bio: { required: false, type: String },
-    socialMedia: { required: false, type: Object },
+    socialMedia: { required: false, type: String },
     profilePicture: { required: false, type: String },
     designation: { required: false, type: String },
+
     provider: { type: String, default: "credentials" }, // track login type
 });
 
