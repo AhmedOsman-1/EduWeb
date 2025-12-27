@@ -4,7 +4,7 @@
   },
   "title": "Learn Python",
   "description": "Learn Python programming language from scratch with hands-on exercises.",
-  "thumbnail": "python_thumbnail.png",
+  "thumbnail": "python_thumbnail.jpg",
   "modules": [
     {
       "$oid": "663a0893bfe65e5778eedf3c"
@@ -13,7 +13,7 @@
       "$oid": "663a0893bfe65e5778eedf3d"
     }
   ],
-  "price": 5000.99,
+  "price": 4567,
   "active": true,
   "category": {
     "$oid": "664813cc6fe803e9128d7fae"
@@ -50,7 +50,7 @@
   },
   "title": "Mastering JavaScript",
   "description": "Learn JavaScript fundamentals from scratch with hands-on exercises.",
-  "thumbnail": "learn_js_thumbnail.jpeg",
+  "thumbnail": "learn_js_thumbnail.jpg",
   "modules": [
     {
       "$oid": "663a0893bfe65e5778eedf3c"
@@ -59,13 +59,13 @@
       "$oid": "663a0893bfe65e5778eedf3d"
     }
   ],
-  "price": 3400.00,
+  "price": 5678,
   "active": true,
   "category": {
     "$oid": "664813cc6fe803e9128d7fae"
   },
   "instructor": {
-    "$oid": "663a06e7bfe65e5778eedf2a"
+    "$oid": "66504f85171d3fa703e7e043"
   },
   "__v": 0,
   "testimonials": [
